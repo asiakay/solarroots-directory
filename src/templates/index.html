@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SolarRoots Directory</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background: radial-gradient(circle at top, #fef3c7, #fef9c3 30%, #ecfdf5 70%, #e0f2fe 100%);
+        min-height: 100vh;
+      }
+      body {
+        margin: 0;
+        padding: 0 1.5rem 3rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        backdrop-filter: blur(4px);
+      }
+      header {
+        text-align: center;
+        margin: 4rem 0 2rem;
+      }
+      h1 {
+        font-size: clamp(2.5rem, 5vw, 3.5rem);
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.04em;
+      }
+      p {
+        max-width: 48ch;
+        line-height: 1.6;
+        color: rgba(31, 41, 55, 0.8);
+      }
+      main {
+        width: min(960px, 100%);
+        display: grid;
+        gap: 1.5rem;
+      }
+      .site-card {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        box-shadow: 0 20px 45px rgba(15, 118, 110, 0.1);
+        border: 1px solid rgba(15, 118, 110, 0.08);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .site-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 30px 60px rgba(15, 118, 110, 0.15);
+      }
+      .site-card h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1.25rem;
+      }
+      .site-card a {
+        color: #0f766e;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      .site-card a:hover {
+        text-decoration: underline;
+      }
+      .tag-list {
+        margin-top: 0.75rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+      .tag {
+        padding: 0.25rem 0.75rem;
+        border-radius: 999px;
+        background: rgba(14, 165, 233, 0.12);
+        color: #0f172a;
+        font-size: 0.75rem;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+      }
+      footer {
+        margin-top: 3rem;
+        font-size: 0.875rem;
+        color: rgba(15, 118, 110, 0.7);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>SolarRoots Directory</h1>
+      <p>
+        A curated guide to grassroots solar cooperatives and regenerative energy projects.
+        This page is rendered dynamically by a Cloudflare Worker using a D1 database.
+      </p>
+    </header>
+    <main>
+      {{siteCards}}
+    </main>
+    <footer>
+      <p>
+        Get started by editing <code>src/index.ts</code> and the D1 migrations in <code>db/migrations</code>.
+      </p>
+    </footer>
+  </body>
+</html>
