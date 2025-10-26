@@ -1,0 +1,24 @@
+{
+  "name": "solarroots-directory",
+  "version": "0.1.0",
+  "description": "Cloudflare Workers scaffold for the SolarRoots directory application",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "lint": "tsc --noEmit",
+    "test": "node -e \"console.log('No automated tests configured yet.')\""
+  },
+  "keywords": [
+    "cloudflare",
+    "workers",
+    "d1",
+    "directory"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20251014.0",
+    "typescript": "^5.9.3",
+    "wrangler": "^4.45.0"
+  }
+}
