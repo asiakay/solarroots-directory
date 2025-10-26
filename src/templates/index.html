@@ -37,6 +37,16 @@
         width: min(960px, 100%);
         display: grid;
         gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+      .site-grid {
+        display: grid;
+        gap: 1.5rem;
+      }
+      @media (min-width: 768px) {
+        .site-grid {
+          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        }
       }
       .site-card {
         background: rgba(255, 255, 255, 0.85);
@@ -77,6 +87,31 @@
         letter-spacing: 0.02em;
         text-transform: uppercase;
       }
+      .next-steps {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 1rem;
+        padding: 1.75rem;
+        border: 1px solid rgba(14, 165, 233, 0.18);
+        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1);
+      }
+      .next-steps h2 {
+        margin-top: 0;
+        font-size: 1.35rem;
+      }
+      .next-steps ol {
+        padding-left: 1.25rem;
+        margin: 1rem 0 0;
+        display: grid;
+        gap: 1rem;
+      }
+      .next-step h3 {
+        margin: 0 0 0.35rem;
+        font-size: 1rem;
+      }
+      .next-step p {
+        margin: 0;
+        color: rgba(31, 41, 55, 0.75);
+      }
       footer {
         margin-top: 3rem;
         font-size: 0.875rem;
@@ -93,7 +128,15 @@
       </p>
     </header>
     <main>
-      {{siteCards}}
+      <section class="site-grid">
+        {{siteCards}}
+      </section>
+      <aside class="next-steps">
+        <h2>Next steps for your directory</h2>
+        <ol>
+          {{nextSteps}}
+        </ol>
+      </aside>
     </main>
     <footer>
       <p>
