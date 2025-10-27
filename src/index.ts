@@ -1,12 +1,10 @@
 import template from './templates/index.html';
-
-type SiteRecord = {
-  id: number;
-  name: string;
-  description: string | null;
-  website: string | null;
-  tags: string[];
-};
+import type { SiteRecord } from './types/directory';
+import {
+  assessDirectoryAgainstVision,
+  visionConfig,
+  VISION_YAML,
+} from './config/vision';
 
 type NextStep = {
   id: string;
@@ -67,6 +65,7 @@ function renderSiteCard(site: SiteRecord): string {
 }
 
 function renderPage(sites: SiteRecord[]): string {
+  const assessment = assessDirectoryAgainstVision(sites);
   const cards = sites.length
     ? sites.map(renderSiteCard).join('\n')
     : `
@@ -78,15 +77,18 @@ function renderPage(sites: SiteRecord[]): string {
 
   const nextSteps = determineNextSteps(sites);
   const nextStepsMarkup = renderNextSteps(nextSteps);
+  const visionSummaryMarkup = renderVisionSummary(assessment);
 
   return template
     .replace('{{siteCards}}', cards)
-    .replace('{{nextSteps}}', nextStepsMarkup);
+    .replace('{{nextSteps}}', nextStepsMarkup)
+    .replace('{{visionSummary}}', visionSummaryMarkup);
 }
 
 function determineNextSteps(sites: SiteRecord[]): NextStep[] {
   const steps: NextStep[] = [];
   const seen = new Set<string>();
+  const assessment = assessDirectoryAgainstVision(sites);
 
   const addStep = (step: NextStep) => {
     if (seen.has(step.id)) {
@@ -95,6 +97,21 @@ function determineNextSteps(sites: SiteRecord[]): NextStep[] {
     seen.add(step.id);
     steps.push(step);
   };
+
+  if (!assessment.metrics.meetsMinimumSites) {
+    const remaining = Math.max(
+      assessment.metrics.minimumSites - assessment.metrics.siteCount,
+      0,
+    );
+    if (remaining > 0) {
+      const noun = remaining === 1 ? 'entry' : 'entries';
+      addStep({
+        id: 'grow-directory-footprint',
+        title: 'Grow the directory footprint',
+        description: `Publish ${remaining} more directory ${noun} to reach the SolarRoots minimum of ${assessment.metrics.minimumSites}.`,
+      });
+    }
+  }
 
   if (!sites.length) {
     addStep({
@@ -139,13 +156,33 @@ function determineNextSteps(sites: SiteRecord[]): NextStep[] {
         description:
           'Create or assign tags that highlight technologies, ownership models, or regions to improve discovery.',
       });
-    } else if (tagSet.size < Math.max(3, sites.length)) {
-      addStep({
-        id: 'expand-taxonomy',
-        title: 'Expand your tagging taxonomy',
-        description:
-          'Broaden the tag set with additional topics so the directory can filter and group projects more effectively.',
-      });
+    } else {
+      if (assessment.metrics.missingRecommendedTags.length) {
+        addStep({
+          id: 'activate-vision-tags',
+          title: 'Activate recommended SolarRoots tags',
+          description: `Introduce tags for ${formatList(
+            assessment.metrics.missingRecommendedTags,
+          )} to reflect the movement priorities captured in the vision document.`,
+        });
+      }
+
+      if (!assessment.metrics.meetsMinimumTagDensity) {
+        addStep({
+          id: 'deepen-tag-context',
+          title: 'Deepen tag context',
+          description: `Document more dimensions for each cooperative so the average tags per site reaches ${assessment.metrics.minimumTagDensity.toFixed(
+            1,
+          )}.`,
+        });
+      } else if (tagSet.size < Math.max(3, sites.length)) {
+        addStep({
+          id: 'expand-taxonomy',
+          title: 'Expand your tagging taxonomy',
+          description:
+            'Broaden the tag set with additional topics so the directory can filter and group projects more effectively.',
+        });
+      }
     }
   }
 
@@ -196,6 +233,48 @@ function renderNextSteps(steps: NextStep[]): string {
     .join('\n');
 }
 
+function renderVisionSummary(assessment: ReturnType<typeof assessDirectoryAgainstVision>): string {
+  const { metrics, progressScore } = assessment;
+  const coveragePercent = Math.round(metrics.coverageRatio * 100);
+  const minimumSitesLabel = metrics.minimumSites
+    ? `${metrics.siteCount}/${metrics.minimumSites} sites published`
+    : `${metrics.siteCount} sites published`;
+  const densityGoalLabel = metrics.minimumTagDensity > 0
+    ? `goal ${metrics.minimumTagDensity.toFixed(1)}`
+    : 'no density goal';
+  const densityLine = `${metrics.averageTagsPerSite.toFixed(1)} tags per site (${densityGoalLabel}).`;
+  const missingTagsText = metrics.missingRecommendedTags.length
+    ? `Missing tags: ${formatList(metrics.missingRecommendedTags)}.`
+    : 'All recommended tags are represented.';
+
+  const lines = [
+    `<p class="vision-score"><strong>${progressScore.toFixed(1)}% alignment</strong> with the SolarRoots vision targets.</p>`,
+    '<ul class="vision-metrics">',
+    `  <li>${escapeHtml(minimumSitesLabel)}.</li>`,
+    `  <li>${escapeHtml(densityLine)}</li>`,
+    `  <li>${coveragePercent}% of recommended tags present. ${escapeHtml(missingTagsText)}</li>`,
+    '</ul>',
+  ];
+
+  return lines.join('\n').trim();
+}
+
+function formatList(items: readonly string[]): string {
+  if (items.length === 0) {
+    return '';
+  }
+
+  if (items.length === 1) {
+    return items[0];
+  }
+
+  if (items.length === 2) {
+    return `${items[0]} and ${items[1]}`;
+  }
+
+  return `${items.slice(0, -1).join(', ')}, and ${items[items.length - 1]}`;
+}
+
 function escapeHtml(value: string): string {
   return value
     .replace(/&/g, '&amp;')
@@ -223,6 +302,19 @@ export default {
       const nextSteps = determineNextSteps(sites);
       return Response.json({
         nextSteps,
+        generatedAt: new Date().toISOString(),
+      });
+    }
+
+    if (url.pathname === '/api/vision') {
+      const sites = await fetchSites(env);
+      const assessment = assessDirectoryAgainstVision(sites);
+      return Response.json({
+        vision: {
+          yaml: VISION_YAML,
+          config: visionConfig,
+        },
+        assessment,
         generatedAt: new Date().toISOString(),
       });
     }

@@ -112,6 +112,25 @@
         margin: 0;
         color: rgba(31, 41, 55, 0.75);
       }
+      .vision-progress {
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(14, 165, 233, 0.18);
+      }
+      .vision-progress .vision-score {
+        margin: 0 0 0.75rem;
+        font-size: 0.95rem;
+        color: rgba(15, 118, 110, 0.9);
+      }
+      .vision-progress .vision-score strong {
+        font-size: 1.1rem;
+      }
+      .vision-progress .vision-metrics {
+        margin: 0;
+        padding-left: 1.25rem;
+        color: rgba(31, 41, 55, 0.75);
+        line-height: 1.5;
+      }
       footer {
         margin-top: 3rem;
         font-size: 0.875rem;
@@ -136,6 +155,10 @@
         <ol>
           {{nextSteps}}
         </ol>
+        <div class="vision-progress">
+          <h3>Vision alignment snapshot</h3>
+          {{visionSummary}}
+        </div>
       </aside>
     </main>
     <footer>
