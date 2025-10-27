@@ -12,6 +12,19 @@ type NextStep = {
   description: string;
 };
 
+type StatTile = {
+  label: string;
+  value: string;
+  detail: string;
+};
+
+type InterestPayload = {
+  name: string | null;
+  email: string;
+  organization: string | null;
+  message: string | null;
+};
+
 export interface Env {
   DB: D1Database;
 }
@@ -29,6 +42,17 @@ const SITE_QUERY = `
   GROUP BY s.id
   ORDER BY s.created_at DESC, s.id DESC;
 `;
+
+const INSERT_INTEREST = `
+  INSERT INTO interest_signups (name, email, organization, message)
+  VALUES (?, ?, ?, ?);
+`;
+
+const INTEREST_CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST,OPTIONS',
+  'Access-Control-Allow-Headers': 'content-type',
+};
 
 async function fetchSites(env: Env): Promise<SiteRecord[]> {
   const { results } = await env.DB.prepare(SITE_QUERY).all<{
@@ -64,23 +88,105 @@ function renderSiteCard(site: SiteRecord): string {
   `;
 }
 
+function buildStatTiles(
+  sites: SiteRecord[],
+  metrics: ReturnType<typeof assessDirectoryAgainstVision>['metrics'],
+): StatTile[] {
+  const siteDetail = metrics.minimumSites
+    ? metrics.siteCount >= metrics.minimumSites
+      ? 'Launch benchmark achieved with community partners.'
+      : `${Math.max(metrics.minimumSites - metrics.siteCount, 0)} more needed for launch.`
+    : 'Gathering founding cooperatives.';
+
+  const densityDetail = metrics.minimumTagDensity > 0
+    ? `${metrics.averageTagsPerSite.toFixed(1)} tags per site (goal ${metrics.minimumTagDensity.toFixed(1)}).`
+    : `${metrics.averageTagsPerSite.toFixed(1)} tags per site captured.`;
+
+  const coveragePercent = Math.round(metrics.coverageRatio * 100);
+  const missingTagsDetail = metrics.missingRecommendedTags.length
+    ? `Missing: ${formatList(metrics.missingRecommendedTags)}.`
+    : 'Every priority tag represented.';
+
+  const baseStats: StatTile[] = [
+    {
+      label: 'Cooperatives listed',
+      value: metrics.siteCount.toString(),
+      detail: siteDetail,
+    },
+    {
+      label: 'Story depth',
+      value: sites.length ? `${metrics.averageTagsPerSite.toFixed(1)}×` : '—',
+      detail: densityDetail,
+    },
+    {
+      label: 'Vision coverage',
+      value: `${coveragePercent}%`,
+      detail: missingTagsDetail,
+    },
+  ];
+
+  if (!sites.length) {
+    baseStats[1] = {
+      label: 'Story depth',
+      value: '—',
+      detail: 'Tag depth unlocks once the first cooperatives join.',
+    };
+  }
+
+  return baseStats;
+}
+
+function renderStatTiles(stats: StatTile[]): string {
+  if (!stats.length) {
+    return `
+      <div class="stat-card">
+        <dt>Directory status</dt>
+        <dd>Getting ready</dd>
+        <p class="stat-detail">We are preparing the first SolarRoots partners.</p>
+      </div>
+    `.trim();
+  }
+
+  return stats
+    .map(
+      (stat) => `
+        <div class="stat-card">
+          <dt>${escapeHtml(stat.label)}</dt>
+          <dd>${escapeHtml(stat.value)}</dd>
+          <p class="stat-detail">${escapeHtml(stat.detail)}</p>
+        </div>
+      `.trim(),
+    )
+    .join('\n');
+}
+
+function renderHighlightCards(sites: SiteRecord[]): string {
+  if (!sites.length) {
+    return `
+      <div class="empty-state">
+        No cooperatives are listed yet. Add your first entries through a D1 migration or the
+        <code>/api/sites</code> endpoint to seed the directory.
+      </div>
+    `.trim();
+  }
+
+  return sites
+    .slice(0, 3)
+    .map(renderSiteCard)
+    .join('\n');
+}
+
 function renderPage(sites: SiteRecord[]): string {
   const assessment = assessDirectoryAgainstVision(sites);
-  const cards = sites.length
-    ? sites.map(renderSiteCard).join('\n')
-    : `
-        <article class="site-card">
-          <h2>No entries yet</h2>
-          <p>Add a site by running a new D1 migration or using the API at <code>/api/sites</code>.</p>
-        </article>
-      `.trim();
-
+  const statsMarkup = renderStatTiles(buildStatTiles(sites, assessment.metrics));
+  const highlightMarkup = renderHighlightCards(sites);
   const nextSteps = determineNextSteps(sites);
   const nextStepsMarkup = renderNextSteps(nextSteps);
   const visionSummaryMarkup = renderVisionSummary(assessment);
 
   return template
-    .replace('{{siteCards}}', cards)
+    .replace('{{statTiles}}', statsMarkup)
+    .replace('{{highlightCards}}', highlightMarkup)
     .replace('{{nextSteps}}', nextStepsMarkup)
     .replace('{{visionSummary}}', visionSummaryMarkup);
 }
@@ -288,9 +394,103 @@ function escapeAttribute(value: string): string {
   return escapeHtml(value).replace(/`/g, '&#96;');
 }
 
+function sanitizeOptionalField(value: unknown, maxLength: number): string | null {
+  if (typeof value !== 'string') {
+    return null;
+  }
+
+  const trimmed = value.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  return trimmed.slice(0, maxLength);
+}
+
+function validateInterestPayload(data: unknown):
+  | { valid: true; payload: InterestPayload }
+  | { valid: false; error: string } {
+  if (typeof data !== 'object' || data === null) {
+    return { valid: false, error: 'Invalid request body.' };
+  }
+
+  const record = data as Record<string, unknown>;
+  const emailRaw = typeof record.email === 'string' ? record.email.trim() : '';
+  if (!emailRaw) {
+    return { valid: false, error: 'Email is required.' };
+  }
+
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailPattern.test(emailRaw)) {
+    return { valid: false, error: 'Enter a valid email address.' };
+  }
+
+  const payload: InterestPayload = {
+    email: emailRaw.slice(0, 256),
+    name: sanitizeOptionalField(record.name, 120),
+    organization: sanitizeOptionalField(record.organization, 160),
+    message: sanitizeOptionalField(record.message, 1500),
+  };
+
+  return { valid: true, payload };
+}
+
+function jsonResponse(body: unknown, init?: ResponseInit): Response {
+  const headers = new Headers(init?.headers);
+  headers.set('content-type', 'application/json; charset=UTF-8');
+  headers.set('Access-Control-Allow-Origin', '*');
+  headers.set('Access-Control-Allow-Methods', 'POST,OPTIONS');
+  headers.set('Access-Control-Allow-Headers', 'content-type');
+  return new Response(JSON.stringify(body), { ...init, headers });
+}
+
+async function handleInterestSubmission(request: Request, env: Env): Promise<Response> {
+  let payload: InterestPayload;
+  try {
+    const data = await request.json();
+    const validation = validateInterestPayload(data);
+    if (!validation.valid) {
+      return jsonResponse({ message: validation.error }, { status: 400 });
+    }
+    payload = validation.payload;
+  } catch (error) {
+    console.error('Invalid interest submission payload', error);
+    return jsonResponse({ message: 'Unable to process request body.' }, { status: 400 });
+  }
+
+  try {
+    await env.DB.prepare(INSERT_INTEREST)
+      .bind(payload.name, payload.email, payload.organization, payload.message)
+      .run();
+  } catch (error) {
+    console.error('Failed to store interest submission', error);
+    return jsonResponse({ message: 'Failed to record interest right now.' }, { status: 500 });
+  }
+
+  return jsonResponse({ message: 'Interest recorded.' }, { status: 201 });
+}
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     const url = new URL(request.url);
+
+    if (url.pathname === '/api/interest') {
+      if (request.method === 'OPTIONS') {
+        return new Response(null, {
+          status: 204,
+          headers: { ...INTEREST_CORS_HEADERS, Allow: 'POST, OPTIONS' },
+        });
+      }
+
+      if (request.method === 'POST') {
+        return handleInterestSubmission(request, env);
+      }
+
+      return jsonResponse(
+        { message: 'Method Not Allowed' },
+        { status: 405, headers: { ...INTEREST_CORS_HEADERS, Allow: 'POST, OPTIONS' } },
+      );
+    }
 
     if (url.pathname === '/api/sites') {
       const sites = await fetchSites(env);
