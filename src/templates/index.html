@@ -6,63 +6,152 @@
     <title>SolarRoots Directory</title>
     <style>
       :root {
-        color-scheme: light dark;
+        color-scheme: light;
         font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        background: radial-gradient(circle at top, #fef3c7, #fef9c3 30%, #ecfdf5 70%, #e0f2fe 100%);
-        min-height: 100vh;
+        background: #f8fafc;
       }
       body {
         margin: 0;
-        padding: 0 1.5rem 3rem;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        backdrop-filter: blur(4px);
+        color: #0f172a;
+        background: linear-gradient(180deg, #fef3c7 0%, #fef9c3 35%, #ecfdf5 70%, #e0f2fe 100%);
+        min-height: 100vh;
+      }
+      .page-shell {
+        position: relative;
+        overflow-x: hidden;
       }
       header {
-        text-align: center;
-        margin: 4rem 0 2rem;
+        padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 6vw, 6rem);
+        display: grid;
+        gap: clamp(1.5rem, 2vw, 2.5rem);
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .hero-eyebrow {
+        letter-spacing: 0.24em;
+        text-transform: uppercase;
+        color: rgba(15, 118, 110, 0.85);
+        font-size: 0.75rem;
+        font-weight: 600;
       }
       h1 {
-        font-size: clamp(2.5rem, 5vw, 3.5rem);
-        margin-bottom: 0.5rem;
+        font-size: clamp(2.75rem, 6vw, 4rem);
+        margin: 0;
         letter-spacing: -0.04em;
+        color: #0f172a;
       }
-      p {
-        max-width: 48ch;
-        line-height: 1.6;
-        color: rgba(31, 41, 55, 0.8);
+      .hero-lede {
+        margin: 0;
+        font-size: clamp(1.05rem, 3vw, 1.25rem);
+        line-height: 1.7;
+        color: rgba(15, 23, 42, 0.8);
+        max-width: 58ch;
       }
-      main {
-        width: min(960px, 100%);
-        display: grid;
-        gap: 1.5rem;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
       }
-      .site-grid {
-        display: grid;
-        gap: 1.5rem;
-      }
-      @media (min-width: 768px) {
-        .site-grid {
-          grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-        }
-      }
-      .site-card {
-        background: rgba(255, 255, 255, 0.85);
-        border-radius: 1rem;
-        padding: 1.5rem;
-        box-shadow: 0 20px 45px rgba(15, 118, 110, 0.1);
-        border: 1px solid rgba(15, 118, 110, 0.08);
+      .cta-row a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.85rem 1.75rem;
+        border-radius: 999px;
+        font-weight: 600;
+        text-decoration: none;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
       }
-      .site-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 30px 60px rgba(15, 118, 110, 0.15);
+      .cta-primary {
+        background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+        color: white;
+        box-shadow: 0 14px 40px rgba(13, 148, 136, 0.35);
+      }
+      .cta-secondary {
+        background: rgba(14, 165, 233, 0.15);
+        color: #0369a1;
+      }
+      .cta-row a:hover {
+        transform: translateY(-2px);
+      }
+      .stat-grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      }
+      .stat-card {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(6px);
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 18px 40px rgba(15, 118, 110, 0.12);
+        border: 1px solid rgba(15, 118, 110, 0.1);
+      }
+      .stat-card dt {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.18em;
+        color: rgba(15, 118, 110, 0.85);
+        margin-bottom: 0.4rem;
+      }
+      .stat-card dd {
+        margin: 0;
+        font-size: 2rem;
+        font-weight: 700;
+        color: #0f172a;
+      }
+      .stat-card .stat-detail {
+        margin-top: 0.35rem;
+        font-size: 0.95rem;
+        color: rgba(15, 23, 42, 0.7);
+      }
+      main {
+        padding: 0 clamp(1.5rem, 6vw, 6rem) clamp(5rem, 10vw, 8rem);
+        max-width: 1100px;
+        margin: 0 auto;
+        display: grid;
+        gap: clamp(3rem, 6vw, 5rem);
+      }
+      section {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1.5rem;
+        padding: clamp(2rem, 5vw, 3rem);
+        box-shadow: 0 25px 55px rgba(14, 165, 233, 0.16);
+        border: 1px solid rgba(14, 165, 233, 0.16);
+      }
+      section h2 {
+        margin-top: 0;
+        font-size: clamp(1.8rem, 3vw, 2.3rem);
+        letter-spacing: -0.02em;
+        color: #0f172a;
+      }
+      section p {
+        line-height: 1.7;
+        color: rgba(15, 23, 42, 0.74);
+        max-width: 70ch;
+      }
+      .highlight-grid {
+        display: grid;
+        gap: 1.5rem;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      }
+      .site-card {
+        background: rgba(248, 250, 252, 0.9);
+        border: 1px solid rgba(148, 163, 184, 0.25);
+        border-radius: 1.25rem;
+        padding: 1.5rem;
+        box-shadow: 0 18px 40px rgba(148, 163, 184, 0.22);
+        display: grid;
+        gap: 0.75rem;
       }
       .site-card h2 {
-        margin: 0 0 0.5rem;
-        font-size: 1.25rem;
+        margin: 0;
+        font-size: 1.3rem;
+        color: #0f172a;
+      }
+      .site-card p {
+        margin: 0;
+        color: rgba(15, 23, 42, 0.7);
       }
       .site-card a {
         color: #0f766e;
@@ -73,7 +162,6 @@
         text-decoration: underline;
       }
       .tag-list {
-        margin-top: 0.75rem;
         display: flex;
         flex-wrap: wrap;
         gap: 0.5rem;
@@ -81,90 +169,265 @@
       .tag {
         padding: 0.25rem 0.75rem;
         border-radius: 999px;
-        background: rgba(14, 165, 233, 0.12);
-        color: #0f172a;
+        background: rgba(14, 165, 233, 0.16);
+        color: #0369a1;
         font-size: 0.75rem;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.04em;
         text-transform: uppercase;
       }
-      .next-steps {
-        background: rgba(255, 255, 255, 0.9);
+      .empty-state {
+        background: rgba(248, 250, 252, 0.9);
         border-radius: 1rem;
-        padding: 1.75rem;
-        border: 1px solid rgba(14, 165, 233, 0.18);
-        box-shadow: 0 20px 40px rgba(14, 165, 233, 0.1);
+        padding: 1.5rem;
+        border: 1px dashed rgba(148, 163, 184, 0.6);
+        color: rgba(15, 23, 42, 0.65);
       }
-      .next-steps h2 {
+      .vision-summary {
+        background: rgba(240, 249, 255, 0.7);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        border: 1px solid rgba(14, 165, 233, 0.25);
+        margin-top: 1.5rem;
+      }
+      .vision-summary p {
         margin-top: 0;
-        font-size: 1.35rem;
       }
-      .next-steps ol {
-        padding-left: 1.25rem;
-        margin: 1rem 0 0;
+      .vision-summary ul {
+        margin: 0;
+        padding-left: 1.2rem;
+      }
+      .next-steps-list {
+        margin: 1.5rem 0 0;
+        padding: 0;
+        list-style: none;
         display: grid;
         gap: 1rem;
       }
+      .next-step {
+        background: rgba(255, 255, 255, 0.85);
+        border-radius: 1rem;
+        padding: 1.25rem 1.5rem;
+        border: 1px solid rgba(15, 118, 110, 0.12);
+        box-shadow: 0 14px 32px rgba(15, 118, 110, 0.08);
+      }
       .next-step h3 {
         margin: 0 0 0.35rem;
-        font-size: 1rem;
+        font-size: 1.05rem;
       }
-      .next-step p {
-        margin: 0;
-        color: rgba(31, 41, 55, 0.75);
-      }
-      .vision-progress {
+      .interest-section form {
+        display: grid;
+        gap: 1rem;
         margin-top: 1.5rem;
-        padding-top: 1rem;
-        border-top: 1px solid rgba(14, 165, 233, 0.18);
       }
-      .vision-progress .vision-score {
-        margin: 0 0 0.75rem;
+      .form-row {
+        display: grid;
+        gap: 0.75rem;
+      }
+      .form-row.double {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 0.75rem 1rem;
+      }
+      label {
+        font-weight: 600;
         font-size: 0.95rem;
-        color: rgba(15, 118, 110, 0.9);
+        color: rgba(15, 23, 42, 0.9);
       }
-      .vision-progress .vision-score strong {
-        font-size: 1.1rem;
+      input,
+      textarea {
+        padding: 0.85rem 1rem;
+        border-radius: 0.85rem;
+        border: 1px solid rgba(148, 163, 184, 0.6);
+        font-size: 1rem;
+        font-family: inherit;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
       }
-      .vision-progress .vision-metrics {
-        margin: 0;
-        padding-left: 1.25rem;
-        color: rgba(31, 41, 55, 0.75);
-        line-height: 1.5;
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: #0f766e;
+        box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.25);
+      }
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+      button[type="submit"] {
+        justify-self: start;
+        padding: 0.85rem 2.25rem;
+        border-radius: 999px;
+        border: none;
+        background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        box-shadow: 0 16px 40px rgba(14, 165, 233, 0.3);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      button[type="submit"]:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 22px 55px rgba(14, 165, 233, 0.35);
+      }
+      button[type="submit"]:disabled {
+        opacity: 0.65;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      .form-status {
+        font-size: 0.95rem;
+        color: rgba(15, 23, 42, 0.7);
       }
       footer {
-        margin-top: 3rem;
-        font-size: 0.875rem;
-        color: rgba(15, 118, 110, 0.7);
+        text-align: center;
+        padding: 2rem 1.5rem 3rem;
+        color: rgba(15, 23, 42, 0.6);
+        font-size: 0.9rem;
+      }
+      @media (max-width: 600px) {
+        .cta-row {
+          flex-direction: column;
+          align-items: stretch;
+        }
+        .cta-row a {
+          width: 100%;
+        }
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>SolarRoots Directory</h1>
-      <p>
-        A curated guide to grassroots solar cooperatives and regenerative energy projects.
-        This page is rendered dynamically by a Cloudflare Worker using a D1 database.
-      </p>
-    </header>
-    <main>
-      <section class="site-grid">
-        {{siteCards}}
-      </section>
-      <aside class="next-steps">
-        <h2>Next steps for your directory</h2>
-        <ol>
-          {{nextSteps}}
-        </ol>
-        <div class="vision-progress">
-          <h3>Vision alignment snapshot</h3>
-          {{visionSummary}}
+    <div class="page-shell">
+      <header>
+        <p class="hero-eyebrow">Community-built solar mapping</p>
+        <h1>SolarRoots Directory</h1>
+        <p class="hero-lede">
+          A welcoming home for regenerative energy cooperatives. Track movement-wide progress,
+          share your initiative, and invite supporters before launch.
+        </p>
+        <div class="cta-row">
+          <a class="cta-primary" href="#interest">Register interest</a>
+          <a class="cta-secondary" href="#highlights">Explore highlighted cooperatives</a>
         </div>
-      </aside>
-    </main>
-    <footer>
-      <p>
-        Get started by editing <code>src/index.ts</code> and the D1 migrations in <code>db/migrations</code>.
-      </p>
-    </footer>
+        <dl class="stat-grid">
+          {{statTiles}}
+        </dl>
+      </header>
+      <main>
+        <section id="highlights">
+          <h2>Spotlight on the movement</h2>
+          <p>
+            We are curating the most community-rooted solar and land stewardship projects we can find.
+            Here are a few of the early entries shaping the SolarRoots launch.
+          </p>
+          <div class="highlight-grid">
+            {{highlightCards}}
+          </div>
+        </section>
+        <section class="vision-section">
+          <h2>Built around the SolarRoots vision</h2>
+          <p>
+            We score every directory update against our published vision so the roadmap stays aligned
+            with grassroots priorities.
+          </p>
+          <div class="vision-summary">
+            {{visionSummary}}
+          </div>
+          <h3>Where we're heading next</h3>
+          <ul class="next-steps-list">
+            {{nextSteps}}
+          </ul>
+        </section>
+        <section id="interest" class="interest-section">
+          <h2>Be first in line when we launch</h2>
+          <p>
+            Share how we can reach you and what you would like to build together. We will follow up as
+            soon as our cooperative toolkit is ready for pilot partners.
+          </p>
+          <form id="interest-form">
+            <div class="form-row double">
+              <div>
+                <label for="interest-name">Name</label>
+                <input id="interest-name" name="name" type="text" autocomplete="name" />
+              </div>
+              <div>
+                <label for="interest-organization">Organization</label>
+                <input
+                  id="interest-organization"
+                  name="organization"
+                  type="text"
+                  autocomplete="organization"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label for="interest-email">Email <span aria-hidden="true">*</span></label>
+                <input
+                  id="interest-email"
+                  name="email"
+                  type="email"
+                  required
+                  autocomplete="email"
+                  placeholder="you@example.org"
+                />
+              </div>
+            </div>
+            <div class="form-row">
+              <div>
+                <label for="interest-message">What excites you about SolarRoots?</label>
+                <textarea id="interest-message" name="message" placeholder="Share your hopes..."></textarea>
+              </div>
+            </div>
+            <button type="submit">Send my interest</button>
+            <p id="interest-status" class="form-status" role="status" aria-live="polite"></p>
+          </form>
+        </section>
+      </main>
+      <footer>
+        Crafted for the cooperative solar ecosystem. Edit <code>src/index.ts</code> to tailor the
+        experience for your community.
+      </footer>
+    </div>
+    <script>
+      const interestForm = document.querySelector('#interest-form');
+      const interestStatus = document.querySelector('#interest-status');
+      if (interestForm && interestStatus) {
+        interestForm.addEventListener('submit', async (event) => {
+          event.preventDefault();
+          interestStatus.textContent = '';
+          const submitButton = interestForm.querySelector('button[type="submit"]');
+          submitButton?.setAttribute('disabled', 'true');
+
+          const formData = new FormData(interestForm);
+          const payload = {
+            name: formData.get('name')?.toString().trim() || null,
+            organization: formData.get('organization')?.toString().trim() || null,
+            email: formData.get('email')?.toString().trim() || '',
+            message: formData.get('message')?.toString().trim() || null,
+          };
+
+          try {
+            const response = await fetch('/api/interest', {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              const errorBody = await response.json().catch(() => ({ message: 'Unable to submit' }));
+              throw new Error(errorBody.message || 'Unable to submit interest right now.');
+            }
+
+            interestForm.reset();
+            interestStatus.textContent = 'Thank you! We will reach out as the SolarRoots launch approaches.';
+          } catch (error) {
+            interestStatus.textContent =
+              error instanceof Error ? error.message : 'Unable to submit interest right now.';
+          } finally {
+            submitButton?.removeAttribute('disabled');
+          }
+        });
+      }
+    </script>
   </body>
 </html>
