@@ -7,6 +7,6 @@ port = 8787
 
 [[d1_databases]]
 binding = "DB"
-database_name = "solarroots_directory"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_name = "solarroots-directory"
+database_id = "b855288a-242c-4e77-8b49-944dff3d63ba"
 migrations_dir = "db/migrations"
