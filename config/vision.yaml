@@ -1,0 +1,25 @@
+mission: >-
+  Connect cooperatives, organizers, and communities with transparent solar knowledge
+  that is grounded in regenerative practices and accessible governance.
+pillars:
+  - id: community-ownership
+    title: Center community ownership
+    description: Highlight projects that distribute decision making and revenue among members.
+  - id: regenerative-practices
+    title: Lift up regenerative practices
+    description: Document how sites steward land, water, and culture while generating energy.
+  - id: open-knowledge
+    title: Share open knowledge
+    description: Provide resources that help new cooperatives launch and collaborate.
+directory_targets:
+  minimum_sites: 6
+  minimum_tag_density: 2.5
+  recommended_tags:
+    - solar
+    - cooperative
+    - regenerative
+    - community-owned
+  storytelling_focus:
+    - governance
+    - ecological-impact
+    - local-economy
